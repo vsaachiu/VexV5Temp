@@ -190,6 +190,31 @@
             box-shadow: 0 0 8px var(--highlight);
         }
 
+        /* Per-variant highlighting for 3708 teams when viewing "All 3708" */
+        .team.h-3708e {
+            background-color: #ffd54f;
+            color: #000;
+            box-shadow: 0 0 8px rgba(255,213,79,0.45);
+        }
+
+        .team.h-3708v {
+            background-color: #81d4fa;
+            color: #000;
+            box-shadow: 0 0 8px rgba(129,212,250,0.45);
+        }
+
+        .team.h-3708x {
+            background-color: #f48fb1;
+            color: #000;
+            box-shadow: 0 0 8px rgba(244,143,177,0.45);
+        }
+
+        .team.h-3708z {
+            background-color: #a5d6a7;
+            color: #000;
+            box-shadow: 0 0 8px rgba(165,214,167,0.45);
+        }
+
         @media (max-width: 400px) {
             .container {
                 grid-template-columns: 1fr;
@@ -363,11 +388,22 @@
         }
 
         filteredMatches.forEach(match => {
-            // Check if team is in this match for highlighting
-            const isHighlighted = (team) => {
-                if (filterTeam === 'All') return team.startsWith('3708');
-                if (filterTeam === 'Everything') return team.startsWith('3708');
-                return team === filterTeam;
+            // Determine the highlight class for a team (returns '' or a class name)
+            const getHighlightClass = (team) => {
+                // When viewing "All 3708", give each 3708 variant a different class
+                if (filterTeam === 'All' && team.startsWith('3708')) {
+                    const variant = team.slice(4).toLowerCase();
+                    if (variant) return `h-3708${variant}`;
+                    return 'highlight';
+                }
+
+                // When "Everything" is selected, highlight all 3708 teams with generic highlight
+                if (filterTeam === 'Everything') {
+                    return team.startsWith('3708') ? 'highlight' : '';
+                }
+
+                // Default: highlight only exact matches
+                return team === filterTeam ? 'highlight' : '';
             };
 
             const card = document.createElement('div');
@@ -381,12 +417,12 @@
                 </div>
                 <div class="teams-grid">
                     <div class="alliance red-alliance">
-                        <div class="team ${isHighlighted(match.red1) ? 'highlight' : ''}">${match.red1}</div>
-                        <div class="team ${isHighlighted(match.red2) ? 'highlight' : ''}">${match.red2}</div>
+                        <div class="team ${getHighlightClass(match.red1)}">${match.red1}</div>
+                        <div class="team ${getHighlightClass(match.red2)}">${match.red2}</div>
                     </div>
                     <div class="alliance blue-alliance">
-                        <div class="team ${isHighlighted(match.blue1) ? 'highlight' : ''}">${match.blue1}</div>
-                        <div class="team ${isHighlighted(match.blue2) ? 'highlight' : ''}">${match.blue2}</div>
+                        <div class="team ${getHighlightClass(match.blue1)}">${match.blue1}</div>
+                        <div class="team ${getHighlightClass(match.blue2)}">${match.blue2}</div>
                     </div>
                 </div>
             `;
